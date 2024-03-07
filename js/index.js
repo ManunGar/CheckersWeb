@@ -35,14 +35,14 @@ start.onclick = function (){
 */
 
 function generateDesk() {
-    matrixDesk = [[0,0,0,0,0,0,0,0],
-    [0,0,0,2,0,2,0,0],
+    matrixDesk = [[2,0,2,0,2,0,2,0],
+    [0,2,0,2,0,2,0,2],
+    [2,0,2,0,2,0,2,0],
     [0,0,0,0,0,0,0,0],
-    [0,0,0,2,0,0,0,0],
     [0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,2,0,0],
-    [0,0,0,0,0,0,0,0],
-    [0,0,0,1,0,0,0,0]]
+    [0,1,0,1,0,1,0,1],
+    [1,0,1,0,1,0,1,0],
+    [0,1,0,1,0,1,0,1]]
     for(let i=0;i<8;i++){
         for(let j=0; j<8;j++){
             let square = document.createElement('div')
@@ -150,7 +150,7 @@ function generateDesk() {
 }
 let squareList = document.getElementsByClassName('square')
 
-
+//TODO: En los if() colocar los Row para que detecte que no se puede salir del tablero por abajo por que si no da error :/
 function whiteNextMovePath(square){
     /*Coge las posiciones de la ficha para siguientes funciones*/
     row = parseInt(square.getAttribute('row'))

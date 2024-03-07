@@ -22,13 +22,11 @@
 #desk{
     margin: auto;
     display: grid;
-    background-color: white;
     grid-template-rows: repeat(8,60px);
     grid-template-columns: repeat(8,60px);
-    border: 1px solid black;
     width: fit-content;
     height: fit-content;
-    background-image: url(/img/Tablero.jpg);
+    background-image: url(/img/Tablero.png);
     background-size: contain;
 
 }
@@ -47,23 +45,27 @@
     border: 1px solid black;
 }
 .square[type='1'] {
-    /*background-color: rgb(186, 186, 133);*/
-    background-image: url(/img/ficha.png);
+    background-image: url(/img/tokenWhite.png);
     background-size: contain;
     
 }
 .square[type='0.1']{
-    background-color: yellow;
+    background-image: url(/img/tokenWhitePath.png);
+    background-size: contain;
 }
 .square[type='2']{
-    background-color: rgb(62, 62, 62);
+    background-image: url(/img/tokenBlack.png);
+    background-size: contain;
 }
 .square[type='0.2']{
-    background-color: rgb(104, 104, 104);
+    background-image: url(/img/tokenBlackPath.png);
+    background-size: contain;
 }
 .square[type='3.1']{
-    background-color: orange;
+    background-image: url(/img/tokenWhiteQueen.png);
+    background-size: contain;
 }
 .square[type='3.2']{
-    background-color: black;
+    background-image: url(/img/tokenBlackQueen.png);
+    background-size: contain;
 }
