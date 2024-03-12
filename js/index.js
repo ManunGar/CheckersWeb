@@ -1,20 +1,12 @@
 let start = document.getElementById('startButton')
 let desk = document.getElementById('desk')
+let contentPlayer = document.getElementById('container')
 let matrixDesk
 
-let row
-let colum
-let type
-let nextRow
-let nextColumLeft
-let nextColumRight
-
-let enemySquare
+let row // Cogemos la fila del cuadrado seleccionado para cuando se mueva o coma un enemigo
+let colum // Cogemos la columna del cuadrado seleccionado para cuando se mueva o coma un enemigo
 let countEnemyEat = 0
 let canEatAtributte = false
-
-let contentPlayer = document.getElementById('container')
-
 
 start.onclick = function (){
     start.classList.add('hide')
@@ -22,30 +14,30 @@ start.onclick = function (){
     generateDesk()
 }
 
-/*
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0]
-*/
+/* Matrices puestas para ser probadas al generar el tablero:
+    Tablero vacio:
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0]
 
-/*
-                  [2,0,2,0,2,0,2,0],
-                  [0,2,0,2,0,2,0,2],
-                  [2,0,2,0,2,0,2,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,0,0,0,0,0,0,0],
-                  [0,1,0,1,0,1,0,1],
-                  [1,0,1,0,1,0,1,0],
-                  [0,1,0,1,0,1,0,1]
+    Tablero en disposición de juego:
+[2,0,2,0,2,0,2,0],
+[0,2,0,2,0,2,0,2],
+[2,0,2,0,2,0,2,0],
+[0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0],
+[0,1,0,1,0,1,0,1],
+[1,0,1,0,1,0,1,0],
+[0,1,0,1,0,1,0,1]
 */
 
 function generateDesk() {
-    matrixDesk = [
+    matrixDesk = [ //Este sera el Tablero, donde se le aplicaran todos los cambios
         [2,0,2,0,2,0,2,0],
         [0,2,0,2,0,2,0,2],
         [2,0,2,0,2,0,2,0],
@@ -54,601 +46,121 @@ function generateDesk() {
         [0,1,0,1,0,1,0,1],
         [1,0,1,0,1,0,1,0],
         [0,1,0,1,0,1,0,1]]
-    for(let i=0;i<8;i++){
-        for(let j=0; j<8;j++){
-            let square = document.createElement('div')
-            square.setAttribute('class','square')
-            square.setAttribute('type', matrixDesk[i][j])
-            square.setAttribute('colum',j)
-            square.setAttribute('row',i )
-            square.setAttribute('caneat', false)
-            square.setAttribute('queenmove', false)
-            desk.appendChild(square)
+        /*Para entender que tipo de cuadrado es cada número:
+            Blancas = 1
+            Negras = 2
+            Reinas Blancas = 3.1
+            Reinas Negras = 3.2
+            Camino de las Blancas = 0.1
+            Camino de las Negras = 0.2
+        */
+    for(let i=0;i<8;i++){//La i es la fila: posicion de las listas internas en la lista principal
+        for(let j=0; j<8;j++){//La j es la columna: posicion del elemento dentro de la lista interna
+            let square = document.createElement('div') //Se crea el DIV
+            square.setAttribute('class','square')// Le ponemos una clase para estilizarla en el CSS
+            square.setAttribute('type', matrixDesk[i][j]) // Le pones el tipo de cuadrado que será gracias a la matriz
+            square.setAttribute('colum',j) // Su columna dentro del tablero
+            square.setAttribute('row',i )// Su fila dentro del tablero
+            square.setAttribute('caneat', false)// Para comprobar si es un camino cuyo movimiento lleva consigo el comerse a un enemigo
+            square.setAttribute('queenmove', false)// Para comprobar si es un camino que pertenece a una reina
+            desk.appendChild(square) //Añadimos el DIV al tablero en el HTML
 
-            square.onclick = function(){
-                let typeSquare = square.getAttribute('type')
-                switch(contentPlayer.getAttribute('player')){
-                    case 'white':
-                        switch(typeSquare){
-                            case '1'://MOSTRAR EL CAMINO
-                                if(desk.getAttribute('eat') == 'false'){
-    /* Si esta en la accion de comer oponentes, no se le permite
-    *  jugar con otras fichas
-    */
-                                    removeNextMovePath()
-                                    whiteNextMovePath(square)
-                                    rePaintDesk()
-                                }
-                                break
-                            case '0.1'://
-                                move(square, row, colum)
-                                if(square.getAttribute('caneat') == 'true'){
-                                    desk.setAttribute('eat', true)
-    /* Con el atributo eat decimos que la ficha a comido 
-    *  a un oponente por lo que entra en una accion de comer oponentes
-    *  para asi pueda comer a varias fichas oponentes a la vez 
-    */                              if(square.getAttribute('queenmove') == 'false'){
-                                        eatEnemySquareQueen(square,row,colum)
-                                        removeNextMovePath()
-                                        checkWhiteCanEat(square)
-                                    }else{
-                                        removeNextMovePath()
-                                        rePaintDesk()
-                                        eatEnemySquareQueen(square,row,colum)
-                                        checkQueenCanEat(square, 1)
-                                    }
-                                }else{removeNextMovePath()}
-
-                                checkWhiteTransformQueen(square)
-                                rePaintDesk()
-                                changePlayer()
-                                break
-                            case '3.1':
-                                if(desk.getAttribute('eat') == 'false'){
-                                    removeNextMovePath()
-                                    queenNextMovePath(square,1)
-                                    rePaintDesk();
-                                }
-                                
-                                break
-                        }
-                        break
-                    case 'black':
-                        switch(typeSquare){
-                            case '2':
-                                if(desk.getAttribute('eat') == 'false'){
-                                    removeNextMovePath()
-                                    blackNextMovePath(square)
-                                    rePaintDesk()
-                                }
-                                break
-                            case '0.2':
-                                move(square, row, colum)
-                                if(square.getAttribute('caneat') == 'true'){
-                                    desk.setAttribute('eat', true)
-                                    if(square.getAttribute('queenmove') == 'false'){
-                                        eatEnemySquare(square,row,colum)
-                                        removeNextMovePath()
-                                        checkBlackCanEat(square)
-                                    }else{
-                                        removeNextMovePath()
-                                        rePaintDesk()
-                                        eatEnemySquareQueen(square,row,colum)
-                                        checkQueenCanEat(square, 2)
-                                    }
-                                    
-                                }else{removeNextMovePath()}
-
-                                checkBlackTransformQueen(square)
-                                rePaintDesk()
-                                changePlayer()
-                                break
-                            case '3.2':
-                                if(desk.getAttribute('eat') == 'false'){
-                                    removeNextMovePath()
-                                    queenNextMovePath(square,2)
-                                    rePaintDesk();
-                                }
-                                break
-                        }
-                        break
-
-                }
-            }
+            square.onclick = function(){clickOnSquare(square)}// Añade la funcion cuando se hace click
         }
     }
     
 }
-let squareList = document.getElementsByClassName('square')
+let squareList = document.getElementsByClassName('square')// Genera la lista de los cuadrados
 
-function whiteNextMovePath(square){
-    /*Coge las posiciones de la ficha para siguientes funciones*/
-    row = parseInt(square.getAttribute('row'))
-    colum = parseInt(square.getAttribute('colum'))
-    /*Calcula las posiciones siguientes a las que puede ir la ficha*/
-    nextRow = row - 1
-    nextColumLeft = colum - 1
-    nextColumRight = colum - 0 + 1
-    if(nextColumLeft >= 0 && nextRow >= 0){/*Comprueba que no se salga del tablero*/
-        switch(matrixDesk[nextRow][nextColumLeft]){
-            case 0:
-                if(desk.getAttribute('eat') == 'false'){
-                    /* Si detecta la actividad de comer imposibilita que
-                    *  las siguiente posicion este vacia para asi obligar a 
-                    *  comer al oponente cercano
-                    */
-                    matrixDesk[nextRow][nextColumLeft] = 0.1
-                }
-                break
-            case 2:
-            case 3.2:
-                if(!(nextRow-1 < 0)){
-                    if(matrixDesk[nextRow-1][nextColumLeft-1] == 0){
-                        matrixDesk[nextRow-1][nextColumLeft-1] = 0.1
-                        let nextSquare = getSquare(nextRow-1, nextColumLeft-1)
-                        nextSquare.setAttribute('caneat',true) 
-                        /* Con este atributo decimos que la ficha puede comer 
-                        *  a un oponente 
-                        */
-                    }
-                }
-                break 
-        }
-    }/* Realiza la accion de mostrar el camino en ambos sentido */
-    console.log(nextRow)
-    if(nextColumRight < 8 && nextRow >= 0){
-        switch(matrixDesk[nextRow][nextColumRight]){
-            case 0:
-                if(desk.getAttribute('eat') == 'false'){
-                    matrixDesk[nextRow][nextColumRight] = 0.1
-                }
-                break
-            case 2:
-            case 3.2:
-                if(!(nextRow-1 < 0)){
-                    if(matrixDesk[nextRow-1][nextColumRight+1] == 0){
-                        matrixDesk[nextRow-1][nextColumRight+1] = 0.1
-                        let nextSquare = getSquare(nextRow-1, nextColumRight+1)
-                        nextSquare.setAttribute('caneat',true)
-                    }
-                }
-                break 
+//Tras hacer click en un cuadro comprueba que funcion hacer dependiendo del tipo de cuadrado que se ha seleccionado
+function clickOnSquare(square){
+    let typeSquare = getTypeSquare(square)
+    if(getColorSquare(square) == getPlayerDesk()){// Si la ficha seleccionada no es del mismo color que el turno de la partida no realiza ninguna funcion, si si es el mismo las realiza
+        if(typeSquare >= 1 && typeSquare < 3){// Cuando el cuadrado es 1 o 2
+            desk.getAttribute('eat') == 'false' ? squareFunctions(square) : console.log('sigue comiendo')
+            //Si hay un cuadrado que esta comiendo, es decir, esta comiendo en cadena, imposibilita la opción de que se pueda seleccionar otra ficha, obligando a acabar el movimiento en cadena
+        }else if(typeSquare < 1){// Cuando el cuadrado es 0.1 o 0.2
+            squarePathFunctions(square)
+        }else{// Cuando el cuadrado es 3.1 o 3.2
+            desk.getAttribute('eat') == 'false' ? queenFunctions(square) : console.log('sigue comiendo')
         }
     }
-}
-function blackNextMovePath(square){
-    row = parseInt(square.getAttribute('row'))
-    colum = parseInt(square.getAttribute('colum'))
-    nextRow = row - 0 + 1
-    nextColumLeft = colum - 1
-    nextColumRight = colum - 0 + 1
+} 
 
-    if(nextColumLeft >=0 && nextRow < 8){
-        switch(matrixDesk[nextRow][nextColumLeft]){
-            case 0:
-                if(desk.getAttribute('eat') == 'false'){
-                    matrixDesk[nextRow][nextColumLeft] = 0.2
-                }
-                break
-            case 1:
-            case 3.1:
-                if(!(nextRow+1 >= 8)){
-                    if(matrixDesk[nextRow+1][nextColumLeft-1] == 0){
-                        matrixDesk[nextRow+1][nextColumLeft-1] = 0.2
-                        let nextSquare = getSquare(nextRow+1, nextColumLeft-1)
-                        nextSquare.setAttribute('caneat',true)
-                    }
-                }
-                break 
-        }
-    }
-    if(nextColumRight < 8 && nextRow < 8){
-        switch(matrixDesk[nextRow][nextColumRight]){
-            case 0:
-                if(desk.getAttribute('eat') == 'false'){
-                    matrixDesk[nextRow][nextColumRight] = 0.2
-                }
-                break
-            case 1:
-            case 3.1:
-                if(!(nextRow+1 >= 8 )){
-                    if(matrixDesk[nextRow+1][nextColumRight+1] == 0){
-                        matrixDesk[nextRow+1][nextColumRight+1] = 0.2
-                        let nextSquare = getSquare(nextRow+1, nextColumRight+1)
-                        nextSquare.setAttribute('caneat',true)
-                    }
-                }
-                break
-        }
-    }
+/* 
+    Funcion para los cuadrados 1 o 2:
+        Elimina cualquier camino restante que haya quedado de otro cuadrado.
+        Muestra el camino del cuadrado seleccionado.
+        Repinta el Tablero ya que se ha modificado la matriz
+*/
+function squareFunctions(square){
+    removeNextMovePath()
+    nextMovePath(square)
+    rePaintDesk()
 }
 
+/* 
+    Funcion para cuando lo cuadrados seleccionados son caminos (0.1 o 0.2):
+    Mueve el cuadrado que ha mostrado el camino: move()
+    Si el camino seleccionado lleva consigo el comer al enemigo realiza las siguientes funciones{
+        Ponemos el atributo eat a true para decir al tablero que hay una ficha que esta comiendo a un enemigo, 
+        esto sera útil para poder comer en cadena y mostrar el camino de esta acción.
+        Come al enemigo: eatEnemySquare()
+        Elimina los caminos que se han creado.
+        Comprueba que pueda seguir comiendo para mantener el atributo 'eat' a true y 
+        así realizar el movimiento de comer en cadena. Tanto para los cuadrados normales o reinas.
+    }Si es un camino normal{
+        Elimina los caminos que se han creado.
+    }
+    Comprobar si le cuadrado que se ha movido se puede transformar en reina
+    Repinta el tablero
+    Cambia el turno del jugador
 
-function checkWhiteCanEat(square){
-    //COGE LAS COORDENADAS DE LA SIGUIENTE POSICION
-    let nextRow = square.getAttribute('row') - 1
-    let nextColumRight = square.getAttribute('colum') - 0 + 1
-    let nextColumLeft = square.getAttribute('colum') - 1
-    //COGE LAS COORDENADAS DE LA SIGUIENTE POSICION
-    let nnextRow = square.getAttribute('row') - 2
-    let nnextColumRight = square.getAttribute('colum') - 0 + 2
-    let nnextColumLeft = square.getAttribute('colum') - 2
-
-    //COMPRUEBA CASUISTICAS QUE POSIBILITEN EL COMER LA FICHA
-    if(desk.getAttribute('eat') == 'true' && 
-        ((nnextRow >= 0 && nnextColumRight < 8) || (nnextRow >= 0 && nnextColumLeft >= 0))){
-        
-        //COMPRUEBA QUE HAY POSIBILIDAD DE QUE LA FICHA SE LO PUEDA COMER
-        if(((matrixDesk[nextRow][nextColumRight] == 2|| 
-            matrixDesk[nextRow][nextColumRight] == 3.2) && 
-            matrixDesk[nnextRow][nnextColumRight] == 0)
-         || ((matrixDesk[nextRow][nextColumLeft] == 2 || 
-            matrixDesk[nextRow][nextColumLeft] == 3.2) && 
-            matrixDesk[nnextRow][nnextColumLeft] == 0)){
-            desk.setAttribute('eat',true)
+*/
+function squarePathFunctions(square){
+    move(square,  row, colum)
+    if(square.getAttribute('caneat') == 'true'){ 
+        desk.setAttribute('eat', true) 
+        eatEnemySquare(square,row,colum) 
+        removeNextMovePath()
+        if(square.getAttribute('queenmove') == 'false'){
+            checkCanEat(square)
         }else{
-            desk.setAttribute('eat',false)  
+            checkQueenCanEat(square, getColorSquare(square))
         }
-    }else {
-        desk.setAttribute('eat',false)
-    }
-    
-    //SI SE PUEDE COMER, SIGUE MOVIENDO EL BLANCO
-    if(desk.getAttribute('eat') == 'true'){
-        changePlayer()
-        whiteNextMovePath(square)
-    }   
-}
-function checkBlackCanEat(square){
-    let nextRow = square.getAttribute('row') -0 + 1
-    let nextColumRight = square.getAttribute('colum') - 0 + 1
-    let nextColumLeft = square.getAttribute('colum') - 1
-
-    let nnextRow = square.getAttribute('row')-0 + 2
-    let nnextColumRight = square.getAttribute('colum') - 0 + 2
-    let nnextColumLeft = square.getAttribute('colum') - 2
-    if(desk.getAttribute('eat') == 'true' &&  
-        ((nnextRow < 8 && nnextColumRight < 8) || (nnextRow < 8 && nnextColumLeft >= 0))){
-            
-            if(((matrixDesk[nextRow][nextColumRight] == 1 ||
-                matrixDesk[nextRow][nextColumRight] == 3.1) && 
-                matrixDesk[nnextRow][nnextColumRight] == 0)
-            || ((matrixDesk[nextRow][nextColumLeft] == 1 ||
-                matrixDesk[nextRow][nextColumLeft] == 3.1) && 
-                matrixDesk[nnextRow][nnextColumLeft] == 0)){
-            desk.setAttribute('eat',true)
-        }else{
-            desk.setAttribute('eat',false)  
-        }
-    }else {
-        desk.setAttribute('eat',false)
-    }
-    
-    if(desk.getAttribute('eat') == 'true'){
-        changePlayer()
-        blackNextMovePath(square)
-    }   
-}
-
-
-function checkWhiteTransformQueen(square){
-    let row = square.getAttribute('row')
-    let colum = square.getAttribute('colum')
-    if(row == 0){
-        matrixDesk[row][colum] = 3.1
-    }
-}
-function checkBlackTransformQueen(square){
-    let row = square.getAttribute('row')
-    let colum = square.getAttribute('colum')
-    if(row == 7){
-        matrixDesk[row][colum] = 3.2
-    }
-}
-
-
-function queenNextMovePath(square, type){
-    canEatAtributte = false
-    row = parseInt(square.getAttribute('row'))
-    colum = parseInt(square.getAttribute('colum'))
-    let topRow = row - 1
-    let bottomRow = row - 0 + 1
-    let columRight = colum - 0 + 1
-    let columLeft = colum - 1
-    if(desk.getAttribute('eat') == 'false'){
-        queenTopRowRightPath(topRow, columRight, type)
-        queenTopRowLeftPath(topRow,columLeft,type)
-        queenBottomRowRightPath(bottomRow, columRight, type)
-        queenBottomRowLeftPath(bottomRow, columLeft, type)
-    }
-    
-}
-
-//FUNCIONES RECURSIVAS PARA EL CAMINO DE LA REINA
-function queenTopRowRightPath(topRow, columRight, type){
-    if(topRow >= 0 && columRight < 8 && countEnemyEat < 2){  
-        if(matrixDesk[topRow][columRight] == type || 
-            matrixDesk[topRow][columRight] == '3.'+type){return}
-        if(matrixDesk[topRow][columRight] == 0){
-            matrixDesk[topRow][columRight] = parseFloat('0.'+ type) 
-            getSquare(topRow,columRight).setAttribute('caneat', canEatAtributte)
-            getSquare(topRow,columRight).setAttribute('queenmove', true) 
         
-        }else if(matrixDesk[topRow][columRight] != type || 
-            matrixDesk[topRow][columRight] != '3.'+type){
-                enemySquare = getSquare(topRow,columRight)
-                canEatAtributte = true
-                countEnemyEat++
-        }
-        queenTopRowRightPath(topRow - 1, columRight + 1,type)
-    }
-    countEnemyEat = 0
-    canEatAtributte = false
-}
-function queenTopRowLeftPath(topRow, columLeft, type){
-
-    if(topRow >= 0 && columLeft >= 0 && countEnemyEat < 2){
-        if(matrixDesk[topRow][columLeft] == type || 
-            matrixDesk[topRow][columLeft] == '3.'+type){return}
-        if(matrixDesk[topRow][columLeft] == 0){
-            matrixDesk[topRow][columLeft] = parseFloat('0.'+ type)   
-            getSquare(topRow,columLeft).setAttribute('caneat', canEatAtributte)
-            getSquare(topRow,columLeft).setAttribute('queenmove', true)
-        }else if(matrixDesk[topRow][columLeft] != type ||
-            matrixDesk[topRow][columLeft] != '3.'+type){
-                enemySquare = getSquare(topRow,columLeft)
-                canEatAtributte = true
-                countEnemyEat++
-            }
-        queenTopRowLeftPath(topRow - 1, columLeft - 1,type)
-    }
-    countEnemyEat = 0
-    canEatAtributte = false
-}
-function queenBottomRowRightPath(bottomRow, columRight, type){
-
-    if(bottomRow < 8 && columRight < 8 && countEnemyEat < 2){
-        if(matrixDesk[bottomRow][columRight] == type || 
-            matrixDesk[bottomRow][columRight] == '3.'+type){return}
-        if(matrixDesk[bottomRow][columRight] == 0){
-            matrixDesk[bottomRow][columRight] = parseFloat('0.'+ type)  
-            getSquare(bottomRow,columRight).setAttribute('caneat', canEatAtributte)
-            getSquare(bottomRow,columRight).setAttribute('queenmove', true) 
-        }else if(matrixDesk[bottomRow][columRight] != type ||
-            matrixDesk[bottomRow][columRight] != '3.'+type){
-                enemySquare = getSquare(bottomRow,columRight)
-                canEatAtributte = true
-                countEnemyEat++
-            }
-        queenBottomRowRightPath(bottomRow + 1, columRight + 1,type)
-    }
-    countEnemyEat = 0
-    canEatAtributte = false
-}
-function queenBottomRowLeftPath(bottomRow, columLeft, type){
-
-    if(bottomRow < 8 && columLeft >= 0 && countEnemyEat < 2){
-        if(matrixDesk[bottomRow][columLeft] == type || 
-            matrixDesk[bottomRow][columLeft] == '3.'+type){return}
-        if(matrixDesk[bottomRow][columLeft] == 0){
-            matrixDesk[bottomRow][columLeft] = parseFloat('0.'+ type)  
-            getSquare(bottomRow,columLeft).setAttribute('caneat', canEatAtributte)
-            getSquare(bottomRow,columLeft).setAttribute('queenmove', true) 
-        }else if(matrixDesk[bottomRow][columLeft] != type ||
-            matrixDesk[bottomRow][columLeft] != '3.' +type){
-                enemySquare = getSquare(bottomRow,columLeft)
-                canEatAtributte = true
-                countEnemyEat++
-            }
-        queenBottomRowLeftPath(bottomRow + 1, columLeft - 1,type)
-    }
-    countEnemyEat = 0
-    canEatAtributte = false
-}
-
-
-//FUNCION PARA COMPROBAR QUE LA REINA PUEDE SEGUIR COMIENDO
-function checkQueenCanEat(square, type) {
-    row = parseInt(square.getAttribute('row'))
-    colum = parseInt(square.getAttribute('colum'))
-    let topRow = row - 1
-    let bottomRow = row - 0 + 1
-    let columRight = colum - 0 + 1
-    let columLeft = colum - 1
-
-    topRowRightState = queenCanEatTopRowRightPath(topRow, columRight, type)
-    topRowLeftState = queenCanEatTopRowLeftPath(topRow, columLeft, type)
-    topBottomRightState = queenCanEatBottomRowRightPath(bottomRow, columRight, type)
-    topBottomLeftState = queenCanEatBottomRowLeftPath(bottomRow,columLeft, type)
-
-    if(topRowRightState || topRowLeftState || topBottomRightState || topBottomLeftState){
-        changePlayer()
-        desk.setAttribute('eat',true)
     }else{
-        desk.setAttribute('eat',false)
+        removeNextMovePath()
     }
+    checkCanTransformQueen(square)
+    rePaintDesk()
+    changePlayer()
 }
 
-function queenCanEatTopRowRightPath(topRow, columRight, type){
-    let canEatState = false
-    if(topRow-1 >= 0 && columRight+1 < 8){
-        if(matrixDesk[topRow][columRight] == type || 
-            matrixDesk[topRow][columRight] == '3.'+type){
-                canEatState = false
-            }else if(matrixDesk[topRow][columRight] == 0){
-            canEatState = queenCanEatTopRowRightPath(topRow-1, columRight+1, type)
-        }else if(!(matrixDesk[topRow][columRight] == type)
-                    || !(matrixDesk[topRow][columRight] == '3.'+type)){
+/*
+    Funcion para los cuadrado 3.1 y 3.2 
+    (igual que para 1 o 2 pero con una funcion para los caminos de las reinas)
+*/
+function queenFunctions(square){
+    removeNextMovePath()
+    queenNextMovePath(square,getColorSquare(square))
+    rePaintDesk();
 
-            if(matrixDesk[topRow-1][columRight+1] == 0){
-                matrixDesk[topRow-1][columRight+1] = parseFloat('0.'+type)
-                getSquare(topRow-1, columRight+1).setAttribute('queenmove', true)
-                getSquare(topRow-1, columRight+1).setAttribute('caneat', true)
-                canEatState = true
-            }
-        }
-    }
-    return canEatState
-}
-function queenCanEatTopRowLeftPath(topRow, columLeft, type){
-    let canEatState = false
-    if(topRow-1 >= 0 && columLeft-1 >= 0){
-        if(matrixDesk[topRow][columLeft] == type || 
-            matrixDesk[topRow][columLeft] == '3.'+type){
-                canEatState = false
-            }else if(matrixDesk[topRow][columLeft] == 0){
-            canEatState = queenCanEatTopRowLeftPath(topRow-1, columLeft-1, type)
-        }else if(!(matrixDesk[topRow][columLeft] == type)
-                    || !(matrixDesk[topRow][columLeft] == '3.'+type)){
-
-            if(matrixDesk[topRow-1][columLeft-1] == 0){
-                matrixDesk[topRow-1][columLeft-1] = parseFloat('0.'+type)
-                getSquare(topRow-1, columLeft-1).setAttribute('queenmove', true)
-                getSquare(topRow-1, columLeft-1).setAttribute('caneat', true)
-                canEatState = true
-            }
-        }
-    }
-    return canEatState
-}
-function queenCanEatBottomRowRightPath(bottomRow, columRight, type){
-    let canEatState = false
-    if(bottomRow+1 < 8 && columRight+1 < 8){
-        if(matrixDesk[bottomRow][columRight] == type || 
-            matrixDesk[bottomRow][columRight] == '3.'+type){
-                canEatState = false
-        }else if(matrixDesk[bottomRow][columRight] == 0){
-            canEatState = queenCanEatBottomRowRightPath(bottomRow+1, columRight+1, type)
-        }else if(!(matrixDesk[bottomRow][columRight] == type)
-                    || !(matrixDesk[bottomRow][columRight] == '3.'+type)){
-
-            if(matrixDesk[bottomRow+1][columRight+1] == 0){
-                matrixDesk[bottomRow+1][columRight+1] = parseFloat('0.'+type)
-                getSquare(bottomRow+1, columRight+1).setAttribute('queenmove', true)
-                getSquare(bottomRow+1, columRight+1).setAttribute('caneat', true)
-                canEatState = true
-            }
-        }
-    }
-    return canEatState
-}
-function queenCanEatBottomRowLeftPath(bottomRow, columLeft, type){
-    let canEatState = false
-    if(bottomRow+1 < 8 && columLeft-1 >= 0){
-        if(matrixDesk[bottomRow][columLeft] == type || 
-            matrixDesk[bottomRow][columLeft] == '3.'+type){
-                canEatState = false
-        }else if(matrixDesk[bottomRow][columLeft] == 0){
-            canEatState = queenCanEatBottomRowLeftPath(bottomRow+1, columLeft-1, type)
-        }else if(!(matrixDesk[bottomRow][columLeft] == type)
-                    || !(matrixDesk[bottomRow][columLeft] == '3.'+type)){
-
-            if(matrixDesk[bottomRow+1][columLeft-1] == 0){
-                matrixDesk[bottomRow+1][columLeft-1] = parseFloat('0.'+type)
-                getSquare(bottomRow+1, columLeft-1).setAttribute('queenmove', true)
-                getSquare(bottomRow+1, columLeft-1).setAttribute('caneat', true)
-                canEatState = true
-            }
-        }
-    }
-    return canEatState
 }
 
 
-
-
-
-//FUNCION PARA MOVER LA FICHA
-function move(square, row, colum){
-    let rowMove = square.getAttribute('row')
-    let columMove = square.getAttribute('colum')
-    let moveQueen = square.getAttribute('queenmove')
-    switch(contentPlayer.getAttribute('player')){
-        case 'white':
-            if(moveQueen == 'true'){matrixDesk[rowMove][columMove] = 3.1}
-            else{matrixDesk[rowMove][columMove] = 1}
-            break
-        case 'black':
-            if(moveQueen == 'true'){matrixDesk[rowMove][columMove] = 3.2}
-            else{matrixDesk[rowMove][columMove] = 2}
-            break    
-    }
-    matrixDesk[row][colum] = 0
+/* 
+    Coge el color del jugador al cual pertenece el turno de la partida
+*/
+function getPlayerDesk(){
+    return contentPlayer.getAttribute('player') == 'white' ? 1 : 2
 }
 
-//FUNCION PARA COMER AL ENEMIGO
-function eatEnemySquare(square, row, colum){
-    /*Posiciones actuales de la ficha*/
-    let movRow = square.getAttribute('row')
-    let movColum = square.getAttribute('colum')
-    let enemyRow; let enemyColum
-    /* Sacamos las coordenadas de la ficha enemiga mediante la
-    *  posicion de la ficha antes y despues restando las filas y las
-    *  columnas y sabiendo si sale positivo o negativo 
-    */
-    if(row - movRow > 0){
-        /*Si el resultado es positivo la ficha enemiga estaba una fila 
-          anterior a la fila de la ficha, es decir, estaba arriba*/
-        enemyRow = row - 1
-    }else{
-        enemyRow = row - 0 + 1
-    }
 
-    if(colum - movColum > 0){
-        /*Si el resultado es positivo la ficha enemiga estaba una columna
-          antes a la columna de la ficha, es decir, estaba a la izquierda*/
-        enemyColum = colum - 1
-    }else{
-        enemyColum = colum - 0 + 1
-    }
-    matrixDesk[enemyRow][enemyColum] = 0
-}
-
-//FUNCION PARA COMER AL ENEMIGO SIENDO REINA
-function eatEnemySquareQueen(square, aRow, aColum){
-    let movRow = parseInt(square.getAttribute('row'))
-    let movColum = parseInt(square.getAttribute('colum'))
-    let enemyRowIt; let enemyColumIt
-
-    if(aRow - movRow > 0){
-        enemyRowIt = -1
-    }else{
-        enemyRowIt = 1
-    }
-
-    if(aColum - movColum > 0){
-        enemyColumIt = -1
-    }else{
-        enemyColumIt = 1
-    }
-
-    let enemySq = getEnemySquare(aRow, aColum, enemyRowIt, enemyColumIt)
-    matrixDesk[enemySq.getAttribute('row')][enemySq.getAttribute('colum')] = 0
-
-}
-function getEnemySquare(row, colum, enemyRowIt, enemyColumIt){
-    row = row + enemyRowIt
-    colum = colum + enemyColumIt
-    let sq = getSquare(row, colum)
-    console.log(sq.getAttribute('type'))
-    if(sq.getAttribute('type') == '0'){
-        sq = getEnemySquare(row, colum, enemyRowIt, enemyColumIt)
-    }
-    return sq
-}
-
-//FUNCION QUE DEVUELVE LA FICHA CON LAS COORDENADAS
-function getSquare(row, colum){
-    let selectSquare
-    for(let i = 0; i < squareList.length; i++){
-        if(squareList[i].getAttribute('row') == row && squareList[i].getAttribute('colum') == colum){
-            selectSquare = squareList[i]
-        }
-    }
-    return selectSquare
-}
-
-//FUNCION DE CAMBIAR JUGADOR TRAS MOVER FICHA
+/* 
+    Cambia el turno de la partida, se le establece un setTimeout para que en el CSS 
+    los cambios de estilos no sean instantaneos
+*/
 function changePlayer(){
     setTimeout(function(){
         if(contentPlayer.getAttribute('player') == 'white'){
@@ -659,7 +171,11 @@ function changePlayer(){
     }, 200)   
 }
 
-//FUNCION DE ELIMINAR EL PATH QUE MUESTRAN LAS FICHAS
+
+/*
+    Elimina los caminos de las fichas que estan en el tablero, para ello
+    recorre la matriz cambiando los valores 0.1 y 0.2 por 0
+*/
 function removeNextMovePath(){
     let n = 0;
     for(let i=0;i<8;i++){
@@ -668,6 +184,7 @@ function removeNextMovePath(){
             if(valueSquare == 0.1 || valueSquare == 0.2){
                 matrixDesk[i][j] = 0
             }
+            /*Si el cuadrado camino tenía un atributo de caneat o queenmove los pone a 0 para restablecerlo*/
             squareList[n].setAttribute('caneat', false)
             squareList[n].setAttribute('queenmove', false)
             n++
@@ -675,9 +192,13 @@ function removeNextMovePath(){
     }
 }
 
-//FUNCION DE REPINTAR EL TABLERO
+
+/*
+    Al aplicar todas las funciones establecidas en el clickOnSquare los cambios de mover, eliminar o mostrar
+    el camino se realizan sobre la matriz. Con el Repaint cambamos los tipos de cada cuadro (DIV) del tablero
+    para que los cambios se hagan visibles en la página
+*/
 function rePaintDesk(){
-    console.log(matrixDesk)
     let squareIndex = 0
     for(let i=0;i<8;i++){
         for(let j=0; j<8;j++){
