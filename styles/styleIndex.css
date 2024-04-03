@@ -1,5 +1,7 @@
 *{
-    margin: 0;   
+    margin: 0;  
+    list-style: none;
+    color: white; 
 }
 
 #container{
@@ -7,65 +9,186 @@
     height: 100vh;
     background-color: rgb(50, 50, 50);
     display: flex;  
-    justify-content: center;
+    justify-content: start;
+    flex-direction: column;
+}
+
+/*=================================== HEADER ======================================*/
+
+#header{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    padding: 50px 100px 0;
+    position: relative;
     align-items: center;
 }
 
-#startButton{
-    width: auto;
-    height: fit-content;
-}
-#startButton.hide {
-    display: none;
+#social ul{
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
 }
 
-#desk{
-    margin: auto;
-    display: grid;
-    grid-template-rows: repeat(8,60px);
-    grid-template-columns: repeat(8,60px);
-    width: fit-content;
-    height: fit-content;
-    background-image: url(../img/Tablero.png);
+#social ul li {
+    position: relative;
+    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: .4s;
+    &:hover {
+        transition: .4s;
+        box-shadow:  4px 4px 8px #191919,
+                 -4px -4px 8px #4b4b4b;
+    }
+}
+
+#social ul li a {
+    display: block;
+    width: 90%;
+    height: 90%;
+    background-image: url(../img/githubWhite.png);
     background-size: contain;
-
-}
-#container[player='white'] #desk {
-    border: 5px solid white;
-}
-#container[player='black'] #desk {
-    border: 5px solid black;
-}
-
-#desk.hide{
-    display: none;
-}
-
-.square {
-    border: 1px solid black;
-}
-.square[type='1'] {
-    background-image: url(../img/tokenWhite.png);
-    background-size: contain;
+    margin: 10% auto 0;
+    transition: .4s;
     
+
 }
-.square[type='0.1']{
-    background-image: url(../img/tokenWhitePath.png);
-    background-size: contain;
+
+#title {
+    font-size: 70px;
+    font-family: "Fira Sans", sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    text-shadow: 8px 8px 16px #191919;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
 }
-.square[type='2']{
-    background-image: url(../img/tokenBlack.png);
-    background-size: contain;
+
+#switch {
+    height: 40px;
+    width: 80px;
+    border-radius: 20px;
+    position: relative;
+    box-shadow: inset 4px 4px 8px #191919,
+                inset -4px -4px 8px #4b4b4b;
 }
-.square[type='0.2']{
-    background-image: url(../img/tokenBlackPath.png);
-    background-size: contain;
+
+#circleSwitch {
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(145deg, #efefef, #c9c9c9);
+    border: 2px solid rgb(130, 130, 130);
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    border-radius: 15px;
 }
-.square[type='3.1']{
-    background-image: url(../img/tokenWhiteQueen.png);
-    background-size: contain;
+
+#circleSwitch.dark {
+    transform: translateX(0px);
+    transition: .4s;
 }
-.square[type='3.2']{
-    background-image: url(../img/tokenBlackQueen.png);
-    background-size: contain;
+
+#circleSwitch.light {
+    transform: translateX(40px);
+    transition: .4s;
 }
+
+/*================================ MAIN CONTAINER =====================================*/
+
+#selectionContainer{
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#buttonsPanel{
+    margin: auto;
+    width: 400px;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: inset 8px 8px 16px #191919,
+               inset -8px -8px 16px #4b4b4b;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#buttonsPanel a {
+    border-radius: 25px;
+    border: 3px solid rgb(50, 50, 50);
+    box-shadow:  8px 8px 16px #191919,
+                -8px -8px 16px #4b4b4b;
+    transition: .4s;
+    &:hover {
+        box-shadow: none;
+        transition: .4s;
+    }
+}
+
+#buttonsPanel a.bloqued {
+    box-shadow: none;
+    cursor: default;
+}
+
+#buttonsPanel a button{
+    width: 100%;
+    height: 45px;
+    border-radius: 25px;
+    color: black;
+    cursor: pointer;
+    border: none;
+    color: rgb(50, 50, 50);
+    background-color: #dfdfdf;
+    font-size: 16px;
+    font-family: 'Rubik', 'sans-serif';
+    font-weight: 500;
+    transition: .4s;
+    &:hover {
+        transform: scale(0.98);
+        transition: .4s;
+        background-color: #f5f5f5;
+    }
+}
+
+#buttonsPanel a.bloqued button {
+    background-color: rgb(130, 130, 130);
+    transform: scale(0.98);
+    cursor: default;
+}
+
+
+.squarePlayer {
+    border-radius: 25px;
+    box-shadow: inset 8px 8px 16px #191919,
+               inset -8px -8px 16px #4b4b4b;
+    padding: 10px 20px;
+    margin: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.imgToken{
+    width: 70px;
+    margin-top: 50px;
+    border-radius: 50%;
+    box-shadow:  8px 8px 16px #191919,
+                -8px -8px 16px #4b4b4b;
+}
+.namePlayer {
+    margin-bottom: 50px;
+    font-family: 'Fira Sans', 'sans-serif';
+    font-weight: 600;
+
+}
+

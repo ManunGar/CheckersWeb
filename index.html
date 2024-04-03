@@ -3,21 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Checkers</title>
+    <link rel="icon" href="./img/tokenWhiteQueen.png">
     <link rel="stylesheet" href="styles/styleIndex.css">
-</head>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet"></head>
 <body>
-    <div id="container" player="white" >
-        <button id="startButton">JUGAR</button>
+    <div id="container" >
 
-        <div id="desk" class="hide" eat = false>
+        <div id="header">
+            <div id="title">
+                Checkers
+            </div>
+            <div id="social">
+                <ul>
+                    <li><a href="https://github.com/ManunGar"></a></li>
+                </ul>
+            </div>
+            <div id="switch">
+                <div id="circleSwitch" class="dark"></div>
+            </div>
+        </div>
 
+        <div id="selectionContainer">
+            <div class="squarePlayer">
+                <img src="./img/tokenWhite.png" alt="image token" id="playerOne" class="imgToken">
+                <h1 id="namePlayerOne" class="namePlayer">WHITE</h1>
+            </div>
+            <div id="buttonsPanel">
+                <a href="pages/desk.html"><button>PLAY GAME</button></a>
+                <a href="" class="bloqued"><button>CHANGE COLORS</button></a>
+                <a href="" class="bloqued"><button>HOW TO PLAY</button></a>
+                <a href="" class="bloqued"><button>PUTO</button></a>
+            </div>
+            <div class="squarePlayer">
+                <img src="./img/tokenBlack.png" alt="image token" id="playerTwo" class="imgToken">
+                <h1 id="namePlayerTwo" class="namePlayer">BLACK</h1>
+            </div>
         </div>
 
     </div>
 
     <script src="js/index.js"></script>
-    <script src="js/models/Tokens.js"></script>
-    <script src="js/models/QueensTokens.js"></script>
 </body>
 </html>

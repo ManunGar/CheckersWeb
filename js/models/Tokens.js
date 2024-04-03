@@ -2,6 +2,7 @@
 
 //Funcion para obtener el tipo de Jugador al que pertenece la ficha.
 function getColorSquare(square){
+    console.log(square)
     let colorSquare
     if(square.getAttribute('type').includes('1')){
         colorSquare = 1
@@ -90,11 +91,12 @@ function nextMovePath(square){
 
 function nextMovePathRigth(nextRow, nextColumRight, nextRowIt, colorSquare){
     if(nextColumRight < 8 && nextRow >= 0 && nextRow < 8){/*Comprueba que no se salga del tablero*/
-    let nextSquareType = matrixDesk[nextRow][nextColumRight]
-        if(nextSquareType == 0 && (countEnemyEat == 1 || desk.getAttribute('eat') == 'false')){
+    let nextSquareColor = getColorSquare(getSquare(nextRow,nextColumRight))
+    let nextSquareType = getTypeSquare(getSquare(nextRow,nextColumRight))
+        if((nextSquareColor == 0 || nextSquareType < 1) && (countEnemyEat == 1 || desk.getAttribute('eat') == 'false')){
             matrixDesk[nextRow][nextColumRight] = parseFloat('0.'+colorSquare)
             getSquare(nextRow, nextColumRight).setAttribute('caneat', canEatAtributte)
-        }else if(nextSquareType != colorSquare && nextSquareType != 0 && countEnemyEat == 0) {
+        }else if(nextSquareColor != colorSquare && nextSquareColor != 0 && countEnemyEat == 0) {
             countEnemyEat = 1
             canEatAtributte = true
             nextMovePathRigth(nextRow + nextRowIt, nextColumRight + 1, nextRowIt, colorSquare)
@@ -105,12 +107,12 @@ function nextMovePathRigth(nextRow, nextColumRight, nextRowIt, colorSquare){
 }
 function nextMovePathLeft(nextRow, nextColumLeft, nextRowIt, colorSquare){
     if(nextColumLeft >= 0 && nextRow >= 0 && nextRow < 8){/*Comprueba que no se salga del tablero*/
-    let nextSquareType = matrixDesk[nextRow][nextColumLeft]
-    console.log(getSquare(nextRow, nextColumLeft))
-        if(nextSquareType == 0 && (countEnemyEat == 1 || desk.getAttribute('eat') == 'false')){
+    let nextSquareColor = getColorSquare(getSquare(nextRow,nextColumLeft))
+    let nextSquareType = getTypeSquare(getSquare(nextRow,nextColumLeft))
+        if((nextSquareColor == 0 || nextSquareType < 1) && (countEnemyEat == 1 || desk.getAttribute('eat') == 'false')){
             matrixDesk[nextRow][nextColumLeft] = parseFloat('0.'+colorSquare)
             getSquare(nextRow, nextColumLeft).setAttribute('caneat', canEatAtributte)
-        }else if(nextSquareType != colorSquare && nextSquareType != 0 && countEnemyEat == 0) {
+        }else if(nextSquareColor != colorSquare && nextSquareColor != 0  && countEnemyEat == 0) {
             countEnemyEat = 1
             canEatAtributte = true
             nextMovePathLeft(nextRow + nextRowIt, nextColumLeft - 1, nextRowIt, colorSquare)
